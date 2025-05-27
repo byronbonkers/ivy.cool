@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>OS - IvyOS</title>
+    <meta name="description" content="IvyOS is a gay browser based operating system">
+    <meta name="twitter:title" content="Ivy">
+    <meta name="twitter:image" content="https://ivy.cool/assets/favicon/logo.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="IvyOS is a gay browser based operating system">
+    <meta property="og:image" content="https://ivy.cool/assets/favicon/logo.png">
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "IvyOS",
+            "url": "https://ivy.cool/ivyOS"
+        }
+    </script>
+    <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="assets/favicon/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/logo.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/logo.png">
+    <link rel="icon" type="image/png" sizes="180x180" href="assets/favicon/logo.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon/logo.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/favicon/logo.png">
+    <title>ivy.cool</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden;
+      text-align: left;
+    }
+
+    a {
+      color: #00ff00;
+      text-decoration: underline;
+    }
+
+    .fake-input {
+    border: none;
+    background: none;
+    color: #00ff00;
+    font-family: inherit;
+    font-size: 1em;
+    width: 100%;
+    outline: none;
+    text-align: left;
+    }
+
+    .blink {
+    animation: blink-animation 1s steps(2, start) infinite;
+    color: #00ff00;
+    font-family: inherit;
+    font-size: 1em;
+    text-align: left;
+    position: relative;
+    }
+
+    @keyframes blink-animation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+    }
+
+
+    pre.ascii {
+      font-size: 12px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .terminal-line {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+
+    .typing {
+      border-right: .15em solid #00ff00;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation: typing 4s steps(40, end) forwards, blink .75s step-end infinite;
+    }
+
+    .noise {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      background: url('data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=') repeat;
+      mix-blend-mode: difference;
+      opacity: 0.03;
+      z-index: 1000;
+    }
+
+    canvas.matrix {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      opacity: 0.1;
+    }
+
+    .content {
+      position: absolute;
+      text-align: center;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 90vw;
+      z-index: 10;
+    }
+
+    input.fake-input {
+      border: none;
+      background: none;
+      color: #00ff00;
+      font-family: inherit;
+      font-size: 1em;
+      width: 100%;
+      outline: none;
+    }
+
+    .terminal-output {
+      margin-top: 10px;
+      position: relative;
+      text-align: left;
+
+    }
+
+    .boot-line {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+  function bootIvyOS() {
+    document.getElementById("bootButtonScreen").style.display = "none";
+    document.getElementById("bootScreen").style.display = "block";
+    document.getElementById("mainContent").style.display = "none";
+    //showNextBootLine();
+    bootSound.play().catch(() => {});
+  }
+</script>
+
+<script>
+    // may have taken from stackoverflow
+  window.addEventListener("DOMContentLoaded", () => {
+    const ram = navigator.deviceMemory || "unknown";
+    const ramLine = document.getElementById("ramCheckLine");
+
+    if (ram !== "unknown") {
+      ramLine.textContent = `[ok] RAM check passed (${ram}GB detected)`;
+    } else {
+      ramLine.textContent = `[ok] RAM check passed (could not detect RAM)`;
+    }
+  });
+</script>
+
+
+
+<div class="noise"></div>
+<audio id="bootSound" src="https://archive.org/download/Boot_Sounds_Compilation/Windows%2095%20-%20Boot.wav" preload="auto"></audio>
+<div id="bootButtonScreen" style="color: #00ff00; font-family: 'Courier New', monospace; text-align: center; padding-top: 20vh;">
+  <h1>[ ivy.cool offline ]</h1>
+  <p>press the button to boot ivyOS</p>
+  <button onclick="bootIvyOS()" style="background:black; color:#00ff00; border:1px solid #00ff00; padding:10px 20px; font-family:inherit;">BOOT</button>
+</div>
+<div class="a" id="bootScreen" style="display: none;">
+<canvas class="matrix"></canvas>
+<div id="boot" class="terminal-output">
+  <pre class="boot-line">[boot] ivyOS v0.1 loading...</pre>
+  <pre class="boot-line">[init] verifying BIOS</pre>
+  <pre class="boot-line" id="ramCheckLine">[ok] RAM check passed (detecting...)</pre>
+  <pre class="boot-line">[init] authenticating user: ivy</pre>
+  <pre class="boot-line">[access] granted ✓</pre>
+  <pre class="boot-line">[env] loading ~/.coolrc</pre>
+  <pre class="boot-line">[system] MOTD: "HACK THE PLANET"</pre>
+  <pre class="boot-line">[ready] entering terminal...</pre>
+</div>
+
+<div class="content" id="mainContent">
+
+  <pre class="ascii">
+⠀⠀⠀⢰⠶⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⠶⠲⣄⠀
+⠀⠀⣠⡟⠀⠈⠙⢦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⡶⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠾⠋⠁⠀⠀⢽⡄
+⠀⠀⡿⠀⠀⠀⠀⠀⠉⠷⣄⣀⣤⠤⠤⠤⠤⢤⣷⡀⠙⢷⡄⠀⠀⠀⠀⣠⠞⠉⠀⠀⠀⠀⠀⠈⡇
+⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠉⠳⣄⠀⠀⠀⠀⠀⠈⠁⠀⠀⠹⣦⠀⣠⡞⠁⠀⠀⠀⠀⠀⠀⠀⠀⡗
+⠀⣾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣻⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣏
+⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡇
+⠀⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⠂
+⠀⢿⠀⠀⠀⠀⣤⣤⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣤⣤⣤⣤⡀⠀⠀⠀⠀⠀⣸⠇⠀
+⠀⠘⣇⠀⠀⠀⠀⠉⠉⠛⠛⢿⣶⣦⠀⠀⠀⠀⠀⠀⢴⣾⣟⣛⡋⠋⠉⠉⠁⠀⠀⠀⠀⣴⠏⠀⠀
+⢀⣀⠙⢷⡄⠀⠀⣀⣤⣶⣾⠿⠋⠁⠀⢴⠶⠶⠄⠀⠀⠉⠙⠻⠿⣿⣷⣶⡄⠀⠀⡴⠾⠛⠛⣹⠇
+⢸⡍⠉⠉⠉⠀⠀⠈⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠀⠀⠀⠀⣬⠷⣆⣠⡤⠄⢀⣤⠞⠁⠀
+⠈⠻⣆⡀⠶⢻⣇⡴⠖⠀⠀⠀⣴⡀⣀⡴⠚⠳⠦⣤⣤⠾⠀⠀⠀⠀⠀⠘⠟⠋⠀⠀⠀⢻⣄⠀⠀
+⠀⠀⣼⠃⠀⠀⠉⠁⠀⠀⠀⠀⠈⠉⢻⡆⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⠀⠀
+⠀⢠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⡀⠀⠀⢀⡇⠀⠀⠀⠀⠀⠀⠀⠀⣀⡿⠧⠿⠿⠟⠀⠀
+⠀⣾⡴⠖⠛⠳⢦⣿⣶⣄⣀⠀⠀⠀⠀⠘⢷⣀⠀⣸⠃⠀⠀⠀⣀⣀⣤⠶⠚⠉⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠈⢷⡀⠈⠻⠦⠀⠀⠀⠀⠉⠉⠁⠀⠀⠀⠀⠹⣆⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢀⡴⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢳⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⡄⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⠉⠛⠛⢲⡗⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢻⡆⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠋⠀⠀⠀⠀⠀⠀⠀
+  </pre>
+
+  <h1 id="greeting"></h1>
+
+  <p>// about me:</p>
+  <ul>
+    <li>writing code & breaking stuff</li>
+    <li>tinkering with devices</li>
+    <li>probably programming for athena right now</li>
+  </ul>
+
+  <p>// links:</p>
+  <ul>
+    <li><a href="https://github.com/byronbonkers" target="_blank">github</a></li>
+    <li><a href="https://twitter.com/byronbonkers" target="_blank">twitter</a></li>
+    <li><a href="https://bsky.app/profile/ivy.cool" target="_blank">bluesky</a></li>
+    <li><a href="mailto:ivy@ivy.cool">email</a></li>
+  </ul>
+
+  <div class="terminal-output" id="output"></div>
+<pre>
+> <input type="text" id="terminalInput" class="fake-input" placeholder="type a command..." autocomplete="off" />
+</pre>
+</div>
+</div>
+<audio id="keySound" src="assets/shortenedtype.wav" preload="auto"></audio>
+
+<script>
+  // plays typewriter sound effect when any keys are pressed
+  const keySound = document.getElementById("keySound");
+  document.addEventListener("keydown", (e) => {
+    if (e.key.length === 1) {
+      keySound.currentTime = 0;
+      keySound.play();
+    }
+  });
+
+  // Matrix effect, may have stolen from github
+  const canvas = document.querySelector("canvas.matrix");
+  const ctx = canvas.getContext("2d");
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letters = "01";
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
+  const drops = Array(Math.floor(columns)).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0f0";
+    ctx.font = fontSize + "px monospace";
+
+    drops.forEach((y, i) => {
+      const text = letters[Math.floor(Math.random() * letters.length)];
+      const x = i * fontSize;
+      ctx.fillText(text, x, y * fontSize);
+      if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+
+  setInterval(drawMatrix, 50);
+
+  // cool boot info
+  const bootLines = document.querySelectorAll('.boot-line');
+  const content = document.getElementById('mainContent');
+
+  let i = 0;
+  function showNextBootLine() {
+    if (i < bootLines.length) {
+      bootLines[i].style.display = 'block';
+      i++;
+      setTimeout(showNextBootLine, 400 + Math.random() * 300);
+    } else {
+      content.style.display = 'block';
+      greet();
+      document.getElementById('terminalInput').focus();
+    }
+  }
+
+  function greet() {
+    const hour = new Date().getHours();
+    let greeting = "hi, i'm ivy.";
+    if (hour < 12) greeting = "good morning, i'm ivy.";
+    else if (hour < 18) greeting = "good afternoon, i'm ivy.";
+    else greeting = "good evening, i'm ivy.";
+    document.getElementById('greeting').textContent = greeting;
+  }
+
+  window.onload = showNextBootLine;
+
+  // terminal
+  const input = document.getElementById('terminalInput');
+  const output = document.getElementById('output');
+  const history = [];
+  let historyIndex = -1;
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      const command = input.value.trim();
+      history.push(command);
+      historyIndex = history.length;
+      output.innerHTML += `<pre>> ${command}</pre>`;
+      input.value = '';
+      runCommand(command);
+      output.scrollTop = output.scrollHeight;
+    } else if (e.key === 'ArrowUp') {
+      if (historyIndex > 0) {
+        historyIndex--;
+        input.value = history[historyIndex];
+      }
+    } else if (e.key === 'ArrowDown') {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        input.value = history[historyIndex];
+      } else {
+        input.value = '';
+      }
+    }
+  });
+
+  function runCommand(cmd) {
+    switch (cmd.toLowerCase()) {
+      case 'help':
+        output.innerHTML += `<pre>Commands: help, whoami, cat about.txt, cat ivy.txt, clear, sudo, ssh ivy@ivy.cool</pre>`;
+        break;
+      case 'whoami':
+        output.innerHTML += `<pre>ivy</pre>`;
+        break;
+      case 'cat about.txt':
+        output.innerHTML += `<pre>Name: ivy\nSkills: hacking, device tinkering, configuring stuff\nStatus: actively editing code</pre>`;
+        break;
+        //giant picture of me in ascii omggg
+      case 'cat ivy.txt':
+        output.innerHTML += `<pre>
+                                                                       @@@@@@@@@@                                       
+                                                                  @@@@@@*++==-=---=+@@@@                                
+                                                             @@@@@*=-=-::::::::----:----+@@  @                          
+                                                         @@*===--:+:.-:::::.:........:::::--@@                          
+                                                      @@%+=--:+-:-:.-:...::::::..........:.::--@@@                      
+                                                     @*===+-:-=:::::::::....:-.:......::...:...::-@                     
+                                                   @%*+=--:-:--:.   ....:..::::::.....:..:......:::-@                   
+                                                 @@#*+++=-=-.  .  ...:--::-:....::.... ......:--:...:-@                 
+                                                @@#*+=*=++- . ..::--=+==--::::.:..:....   ......:-:.::--@               
+                                               @%#*++==+==..:.:=+*###***#*=-:--..::::.....  . ...:--.::-:@@             
+                                              @#%=++=+==-=:-=**#%%@@@@@@@%##+=+=:-:::..:..:.......:.:-::::*             
+                                             @%%+*=+=*-=::-+*#%@@@@@@@@@@@@%#*=-+=-:-::..::....:..:.:.-:-::=@           
+                                            @#@**+=++=:::*+#%@@@@@@@@@@@@@@@@%#*--=+==:.:::.::........::::::-@          
+                                           @#*#*=+++=::.=+#@@@@@@@@@@@@@@@@@%%#*+-.:===-::.:.:........::::.::=@         
+                                          @@##*#++=++..-*%@@@@@@@@@@@@@@@@@@@%%##+=:.:=--=::::...  . .:::::::--@        
+                                          @#%#*++*#*+.:*%@@@@@@@@@@@@@@@@@@@@%%%##**-:=::=:.:...:...  .::::::::-@       
+                                         @@###=#**+=.:=#@@@@@@@@@@@@@@@@@@@@@@@@%%##**=:..-::.:: ...-....-:.:::::@      
+                                         @@@%*+**+=+::*%@@@@@@@@@@@@@@@@@@@@@@@%%##*+===::..:::.....::..:::::.:::=@     
+                                         @@%#-*##*+*=-#@@@@@@@@@@@@@@@@@@@@@%#*=:.:..:::.....-:::.....:::::::..::-+@    
+                                        @@%@@++#*=++:+%@@@@@@@@@@@@@@@@@%+--:...-+*****+-=::.-=:.:.. :.:::::...::::@@   
+                                        @@%%*+*#++=+-=#@@@@@@@@@@@@@@@@*=---+##%@@@%%##*+=-:..::.:.....:::.:......:-@@  
+                                        @@%#+****=+=:=---:-=*%@@@@@@@@#*+***##**#--:::-:-=--.:::........::.::...::::-@@ 
+                                        @@%%+*%**=-+=--+*###%@@@@@@@@@%#*++++*-@#*...:=-:::--::.::.....:.::......::::*@ 
+                                        @@@%##+%*+---++*##***##%@@@@@@%#**++===*##+++-=-=+==-::::... ..:..........:::-@@
+                                        @@@%+#**#*-+::=::....-+*%@@@@@@%#*++*+***###*******+=::.:... ...........:.::::-@
+                                        @@%#+=%*%*+*+-=*+.:..+#%@@@@@@%%###****#####%#####**=::.:....... ........:.:::-@@@@@@@
+                                         @@%**+***#++=::-=+***#%@@@@@@%%%%%%%##%%%@@@%%%%##*+:::........... ...::@@@@@@@@@@@@@@@@
+                                         @@@*+#**#+=+=:==+*###%@@@@@@@@%%%%##%%%%@%@@%@%%%##+:::.........::@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        @@@%#+%*%#*++#-==*##%@@@@@@@@@@@%%%####%%%@%@@%%%%#*+:::..:=@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        @@%%@*+%*#%#-*=+**#%@@@@@@@@@@@@@%##*##%%%%%@@%%%##*+-:::@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        @@@%*%+****#*+++**%@@@@@@@@@@@@@%@%##***%%@@@@@%%##*+-::@@@@@@@@%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                        @@@@#**%+#*@#+++*#%@@@@@@@@@@@@@%%####+#%@@@@@%%%##*+-:%@@@@@@%##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                         @@@%%++#=*#%++-**%%@@@@@@@@@@%##+++++*#%@@@%%%%##*++-@@@@@@@%#@@@@@@@@@@@@@@@@@@@@%#%@@@@@@@@@@@@@
+                                         @@@%%*=++*+%*=+=*#%@@@@@@@@@@@%@#**#%%%%%@%%%%###*+=@@@@@@@%#.@@@@@@@@@@@@@@@@@@@%:-@@@@@@@@@@@@@@
+                                         @@@@@@@+==*#+==+=*#%%@@@@@@@@@@@@%%@%%%%%%%%###**+=@@@@@@@#=..@@@@@@@@@@@@@@@@@@%..@@@@@@@@@@@@@@@
+                                          @@@@@%%+==*%+++-=*#%@@@@@@@@@@@@%%%@%%%%#####**+==+@@@@@%=.:-@@@@@@@@@@@@@@@@@=.@@@@@@@@@#@%@@@@@
+                                          @@@@%##*-=+=+--=--=*%@@@@@@@@@@@@%%#%%%###****++=-=@@@@@#.-:-@@@@@@@@@@@@@@@@@+@@@@@@@@@@*=:=#@@@
+                                         @@@@@@%#=--+=+--:::-=+%@@@@@@%%@@@%%#**********++=-+@@@@@-:=:-@@@@@@@@%@@@@@@@@@@@@@@@@@%#...:+##%
+                                         @@@@@%#**=-=+--::.:::-*%@@@@%*#@%@*************+==-*@@@@*-:-::=@@@@@@@%@@@@@@@%@@@@@%@@%*. -==:-+*
+                                        @@@@@@#*%+=.-=:-:...:::-*@@@@@@@@@#*#*####*****++==--:.:.::-:---@@@@@%%%#@@@@@@%=@@@@%@@%#*.. -=--+
+                                       @@@@@@@#*#==-=:-.::...:-:-%@@@@@@@@%%%%######**+++=-:::...:  ....  +@@@%%@#@@@@@#*- .#@@%##+-   .
+                                       @@@@@@%%#%+--:::::......+--#@@@@%%%%%%%%%%##***++==--::....:+*++:..::.%@@@@%- :--**. .=.:=-+..   .
+                                      @@@@@@%#%+=+::.::::..:::@@@%#++@@@@@@@@@@@@%##**++=-:::::::.#++#*-:-:::::::.... .   .       =::.. .@
+                                     @@@@@@%#@%#+*-::.:::::=@@@@%##*+*@@@@@@@@@@%##**++=-::::::...+++++--:::::::::::..         .  -.:. .-:.
+                         @@@@@@@    @@@@@@%#@@@#=---:.:--=@@@@@%##*+.=*@@@@@@@@@%##*++=-:--:::::.:+++++=:  .......::.-...     ..    .. ..-:
+                 @@@@@@@@@@@@@@@@  @@@@@@%%@ @%#+==:..:@@@@@@@%#**--:::-#@@@@@@%##*+=====-----::..   +: :.::: ....:*- :+:..    .. .      .:
+               @@@@@@@@@@@@@@%%@   @@@@@%#@  @@%*==::@@@@@@@%%#*:::::::..=+===+=++++++++=====*=-.   -. .::..      .*.+-.::..  .   .       .
+             @@@@@@@@@@@@@@%%%%@  @%%%@@%@   @@%#=@@@@@@@@@%#:..::::::....#*++++++****+++*++-+--.  @: :::.          @+:= :.
+            @@@@@@@@@@@@%%@@@@%%@@@%%@%%%    @@@@@@@@@@@@%#.....::::::::.:-#**++++********-+==--.  +..:# . . .....   @:= .:      .
+          @@@@@@@@@@@@%%%@@@@@@%@@@@@@@@@@@@@@@@@@@@@%%%*.......:::::.::::::#++++:+:-=:+=:=:++@@.  *:..@..     ..    @-# ..       :
+          @@@@@@@%@@%%@@@@%@@@@@@@@@@@@@@@@@@@@@@@@%##-...........::.:::::+-=-:=--:=.:-:=--+*+%@:  #@.:::.:         *:-..*.       +      ..
+          @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#=::............:::.:::##%@@##=:*+***#**#*#+=@:.. @@...::........:=- :=        .        -
+          @@@@@@@@@@@@@@@@@@@@@@%@@@@@@@@@@%%%%###+-:-:..:.........:...:-%*%@@@%%#***#***####=--...  :-:.::.::-::-: .:=                   .
+          @@@@@@@@@@@@@@@@@@@@@%%%@@@@@@@%%%##@@@%*=--::..::.::.....:::::#%@@@@@%#**+******##+::.:..  .--:::.::.::-:    
+          @@@@@@@@@@@@@@@@@@@@@@%%@@@@%%%%##@@@@@%#=--:....::......::.:::..*@@@@@%#*++++++=...::..+=++=:-=:::::...  ..  
+          @@@@@@@@@@@@@@@@@@@@@@%#%%%%%###@@@@@@@%#+---:..::::.....:.:::....:-==++==-==-:.....::::#++++::-::.......        .....
+          @@@@@@@@@@@@@@@@@@@@@@%###%%#%@@@@@@@@@@%*+=--::::::.......::...              ..  ..::---+*@+-:----:::       .........
+          @@@@@@@@@@@@@@@@@@@@@@@%##%%@@@@@@@@@@@@%*+=---::-:::......::.                   .. .::::*+**--::-::-=:..   .:..::.:::.
+          @@@@@@@@@@@@@@@@@@@@@@@%%#%@@@@@@@@@@@@@@*+=-+-::---:........   . .              .. ..:.::----:::::::::::::::::::::::...
+        </pre>`;
+        break;
+      case 'sudo':
+        output.innerHTML += `<pre>Permission denied: you're not root.</pre>`;
+        break;
+      case 'ssh ivy@ivy.cool':
+        output.innerHTML += `<pre>Connecting...\nConnection refused — target only accepts ssh-key authorisation</pre>`;
+        break;
+      case 'clear':
+        output.innerHTML = '';
+        break;
+      default:
+        output.innerHTML += `<pre>Command not found: ${cmd}</pre>`;
+    }
+  }
+</script>
+
+</body>
+</html>
